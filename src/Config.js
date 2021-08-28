@@ -1,6 +1,7 @@
 const merge = require("deepmerge");
 const Discord = require("discord.js");
 const serialize = require("serialize-javascript");
+const lodash = require("lodash");
 const { EventEmitter } = require("events");
 const { ConfigOptions, ConfigData, ConfigEditOptions } = require("./Constants.js");
 const VoiceManager = require("./Manager.js");
@@ -62,6 +63,14 @@ class Config extends EventEmitter {
      */
     get trackAllChannels() {
         return this.options.trackAllChannels || this.manager.options.default.trackAllChannels;
+    }
+
+    /**
+     * The channels to track (if trackAllChannels is true this will be ignored).
+     * @type {Snowflake[]}
+     */
+    get channelIds() {
+        return this.options.channelIds || this.manager.options.default.channelIds;
     }
 
     /**
@@ -345,7 +354,7 @@ class Config extends EventEmitter {
     async checkChannel(channel) {
         const exemptChannel = await this.exemptChannels(channel);
         if (exemptChannel) return false;
-        if (!this.trackAllChannels && !this.channelIds.includes(channel.id)) return false;
+        if (!(this.trackAllChannels && lodash._.includes(this.channelIds, channel.id))) return false;
         if (this.minUserCountToParticipate > 0 && channel.members.size < this.minUserCountToParticipate) return false;
         if (this.maxUserCountToParticipate > 0 && channel.members.size > this.maxUserCountToParticipate) return false;
         return true;

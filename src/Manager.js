@@ -401,7 +401,7 @@ class VoiceManager extends EventEmitter {
                 if (!config) {
                     config = await this.createConfig(user.guildId);
                 }
-                if (!(await config.checkMember(user.member)) || !(await config.checkChannel(user.channel))) return;
+                if (!((await config.checkMember(user.member)) && (await config.checkChannel(user.channel)))) return;
                 const oldUser = lodash._.cloneDeep(user);
                 if (config.voiceTimeTrackingEnabled) {
                     let previousVoiceTime;
@@ -469,7 +469,7 @@ class VoiceManager extends EventEmitter {
         if (!config) {
             config = await this.createConfig(member.guild.id);
         }
-        if (!(await config.checkMember(member)) || !(await config.checkChannel(member.channel))) return false;
+        if (!((await config.checkMember(member)) && (await config.checkChannel(member.channel)))) return false;
         else return await this.createUser(member.id, member.guild.id);
     }
     /**
